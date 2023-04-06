@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator nexusPrisma {
+  provider = "nexus-prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+/// Represents an Account.
+/// An account can have multiple profiles.
+model Account {
+  /// Unique id.
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  /// Email address.
+  email    String    @unique
+  /// The password of this account.
+  password String?
+  /// The profiles of this account.
+  profiles Profile[]
+}
+
+/// Represents a Profile.
+model Profile {
+  /// Unique id.
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  /// Full name.
+  name      String
+  /// The account this profile belongs to.
+  account   Account?  @relation(fields: [accountId], references: [id])
+  /// The id of th eaccount this profile belongs to.
+  accountId String    @db.ObjectId
+  /// Comments made by this profile.
+  Comment   Comment[]
+}
+
+/// Represents a web domain.
+model Domain {
+  /// Unique id.
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  /// The domain including to top-level domain e.g. google.com
+  domain     String       @unique
+  /// The url for the domain's icon.
+  icon       String?
+  /// The web addresses under this domain.
+  webAddresses WebAddress[]
+}
+
+/// Represent a unique web address with a one-to-one relation to a Post.
+model WebAddress {
+  /// Unique id.
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  /// A hashed value of the web address.
+  hash     String  @unique
+  /// The domain this web address belongs to.
+  domain   Domain? @relation(fields: [domainId], references: [id])
+  /// The id of the domain this web address belongs to.
+  domainId String  @db.ObjectId
+  /// A post linked to this web address.
+  post     Post?
+}
+
+/// Represents a Post.
+model Post {
+  /// Unique id.
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  /// Title of this post
+  title        String
+  /// Comments on this post.
+  comments     Comment[]
+  /// The web address linked to this post.
+  webAddress   WebAddress? @relation(fields: [webAddressId], references: [id])
+  /// The id of the web address linked to this post.
+  webAddressId String      @unique @db.ObjectId
+}
+
+/// Represents a Comment.
+model Comment {
+  /// Unique id.
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  /// The profile that made this comment
+  profile   Profile?        @relation(fields: [profileId], references: [id])
+  /// The of the profile that made this comment
+  profileId String          @db.ObjectId
+  /// The post this comment was made on.
+  post      Post?           @relation(fields: [postId], references: [id])
+  /// The id post this comment was made on.
+  postId    String          @db.ObjectId
+  /// The content of this comment.
+  content   CommentContent?
+}
+
+/// Represents the content of a comment.
+model CommentContent {
+  /// Unique id.
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// The comment that contains this content.
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  /// The id of the comment that contains this content.
+  commentId String   @unique @db.ObjectId
+  /// The text content.
+  text      String
+}
