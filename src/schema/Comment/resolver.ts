@@ -45,4 +45,6 @@ export async function createComment(
     const post = await createPost(client, args.url);
     return createCommentOnPost(client, profileId, post.id, args.contentText);
   }
+  
+  throw(new Error('Supply a postId or url.'));
 }

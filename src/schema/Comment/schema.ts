@@ -63,8 +63,8 @@ export default [
         resolve: (_, {postId, url, contentText}, context: Context) =>
           createComment(context.prisma, context.profileId, {
             contentText,
-            postId,
-            url,
+            postId: postId || undefined,
+            url: url || undefined,
           }),
       });
     },
