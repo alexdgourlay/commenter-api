@@ -2,13 +2,15 @@
   "name": "commenter-api",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "npm run build && node ./dist/index.js",
+    "build": "npm run generate && tsc",
+    "start": "node ./dist/index.js",
     "dev": "ts-node-dev --transpile-only --no-notify index.ts",
-    "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
+    "generate": "npm run generate:prisma && npm run generate:nexus",
     "generate:prisma": "prisma generate",
     "generate:nexus": "ts-node --transpile-only src/schema",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "docker:build": "docker build -t commenter-api .",
+    "docker:run": "docker run -p 4000:4000 commenter-api"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
