@@ -1,6 +1,6 @@
 import {Domain} from 'nexus-prisma';
 import {extendType, objectType} from 'nexus';
-import {Context} from '../../context';
+import { Context } from '../../server';
 
 export default [
   objectType({
@@ -9,6 +9,7 @@ export default [
     definition(t) {
       t.field(Domain.id);
       t.field(Domain.domain);
+      t.field(Domain.icon);
       t.field(Domain.webAddresses);
     },
   }),

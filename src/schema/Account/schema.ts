@@ -1,6 +1,6 @@
 import {Account} from 'nexus-prisma';
 import {objectType, extendType} from 'nexus';
-import {type Context} from '../../context';
+import { type Context } from '../../server';
 
 export default [
   objectType({

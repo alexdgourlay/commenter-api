@@ -8,6 +8,7 @@ import postSchema from './Post/schema';
 import accountSchema from './Account/schema';
 import domainSchema from './Domain/schema';
 import webAddressSchema from './WebAddress/schema'
+import likeSchema from './Like/schema';
 
 export const schema = makeSchema({
   types: [
@@ -17,9 +18,10 @@ export const schema = makeSchema({
     postSchema,
     accountSchema,
     domainSchema,
-    webAddressSchema
+    webAddressSchema,
+    likeSchema
   ],
   outputs: {
-    typegen: path.join(__dirname, './__generated__/types.d.ts'),
+    typegen: path.join(__dirname, '../__generated__/schema/types.d.ts'),
   },
 });

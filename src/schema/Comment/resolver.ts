@@ -1,21 +1,29 @@
 import {
-  type PrismaClient,
   type CommentContent,
   type Post,
   type Profile,
 } from '@prisma/client';
 import {createPost} from '../Post/resolver';
+import {Context} from '../../server';
 
 function createCommentOnPost(
-  client: PrismaClient,
+  context: Context,
   profileId: Profile['id'],
   postId: Post['id'],
   contentText: CommentContent['text'],
 ) {
-  return client.comment.create({
+  return context.prisma.comment.create({
     data: {
-      profileId,
-      postId,
+      profile: {
+        connect: {
+          id: profileId,
+        },
+      },
+      post: {
+        connect: {
+          id: postId,
+        },
+      },
       content: {
         create: {
           text: contentText,
@@ -26,7 +34,7 @@ function createCommentOnPost(
 }
 
 export async function createComment(
-  client: PrismaClient,
+  context: Context,
   profileId: Profile['id'],
   args: {
     contentText: CommentContent['text'];
@@ -36,15 +44,15 @@ export async function createComment(
 ) {
   if (args.postId !== undefined) {
     return createCommentOnPost(
-      client,
+      context,
       profileId,
       args.postId,
       args.contentText,
     );
   } else if (args.url !== undefined) {
-    const post = await createPost(client, args.url);
-    return createCommentOnPost(client, profileId, post.id, args.contentText);
+    const post = await createPost(context, args.url);
+    return createCommentOnPost(context, profileId, post.id, args.contentText);
   }
-  
-  throw(new Error('Supply a postId or url.'));
+
+  throw new Error('Supply a postId or url.');
 }

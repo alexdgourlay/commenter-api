@@ -38,17 +38,19 @@ model Profile {
   /// The id of th eaccount this profile belongs to.
   accountId String    @db.ObjectId
   /// Comments made by this profile.
-  Comment   Comment[]
+  comments  Comment[]
+  /// Likes made by this profile.
+  likes     Like[]
 }
 
 /// Represents a web domain.
 model Domain {
   /// Unique id.
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   /// The domain including to top-level domain e.g. google.com
-  domain     String       @unique
+  domain       String       @unique
   /// The url for the domain's icon.
-  icon       String?
+  icon         String?
   /// The web addresses under this domain.
   webAddresses WebAddress[]
 }
@@ -67,18 +69,38 @@ model WebAddress {
   post     Post?
 }
 
+/// Represents a 'like' reaction to a post.
+model Like {
+  /// Unique id.
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// The post that is liked.
+  post      Post?    @relation(fields: [postId], references: [id])
+  /// The id of the post that is liked.
+  postId    String   @db.ObjectId
+  /// The profile that liked.
+  profile   Profile? @relation(fields: [profileId], references: [id])
+  /// The id of the profile that liked.
+  profileId String   @db.ObjectId
+
+  @@unique([postId, profileId])
+}
+
 /// Represents a Post.
 model Post {
   /// Unique id.
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   /// Title of this post
   title        String
+  /// The preview image for this post.
+  previewImage String?
   /// Comments on this post.
   comments     Comment[]
   /// The web address linked to this post.
   webAddress   WebAddress? @relation(fields: [webAddressId], references: [id])
   /// The id of the web address linked to this post.
   webAddressId String      @unique @db.ObjectId
+  /// The likes on this post.
+  likes        Like[]
 }
 
 /// Represents a Comment.

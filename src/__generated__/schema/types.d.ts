@@ -43,16 +43,24 @@ export interface NexusGenObjects {
   }
   Domain: { // root type
     domain: string; // String!
+    icon?: string | null; // String
     id: string; // ID!
+  }
+  Like: { // root type
+    id: string; // ID!
+    postId: string; // String!
+    profileId: string; // String!
   }
   Mutation: {};
   Post: { // root type
     _count?: NexusGenRootTypes['PostCount'] | null; // PostCount
     id: string; // ID!
+    previewImage?: string | null; // String
     title: string; // String!
   }
   PostCount: { // root type
     comments?: number | null; // Int
+    likes?: number | null; // Int
   }
   Profile: { // root type
     id: string; // ID!
@@ -95,22 +103,35 @@ export interface NexusGenFieldTypes {
   }
   Domain: { // field return type
     domain: string; // String!
+    icon: string | null; // String
     id: string; // ID!
     webAddresses: NexusGenRootTypes['WebAddress'][]; // [WebAddress!]!
+  }
+  Like: { // field return type
+    id: string; // ID!
+    post: NexusGenRootTypes['Post'] | null; // Post
+    postId: string; // String!
+    profileId: string; // String!
   }
   Mutation: { // field return type
     createComment: NexusGenRootTypes['Comment']; // Comment!
     createProfile: NexusGenRootTypes['Profile']; // Profile!
+    likePost: NexusGenRootTypes['Like']; // Like!
+    unlikePost: NexusGenRootTypes['Like']; // Like!
   }
   Post: { // field return type
     _count: NexusGenRootTypes['PostCount'] | null; // PostCount
     comments: NexusGenRootTypes['Comment'][]; // [Comment!]!
     id: string; // ID!
+    liked: boolean; // Boolean!
+    likes: NexusGenRootTypes['Like'][]; // [Like!]!
+    previewImage: string | null; // String
     title: string; // String!
     webAddress: NexusGenRootTypes['WebAddress'] | null; // WebAddress
   }
   PostCount: { // field return type
     comments: number | null; // Int
+    likes: number | null; // Int
   }
   Profile: { // field return type
     id: string; // ID!
@@ -156,22 +177,35 @@ export interface NexusGenFieldTypeNames {
   }
   Domain: { // field return type name
     domain: 'String'
+    icon: 'String'
     id: 'ID'
     webAddresses: 'WebAddress'
+  }
+  Like: { // field return type name
+    id: 'ID'
+    post: 'Post'
+    postId: 'String'
+    profileId: 'String'
   }
   Mutation: { // field return type name
     createComment: 'Comment'
     createProfile: 'Profile'
+    likePost: 'Like'
+    unlikePost: 'Like'
   }
   Post: { // field return type name
     _count: 'PostCount'
     comments: 'Comment'
     id: 'ID'
+    liked: 'Boolean'
+    likes: 'Like'
+    previewImage: 'String'
     title: 'String'
     webAddress: 'WebAddress'
   }
   PostCount: { // field return type name
     comments: 'Int'
+    likes: 'Int'
   }
   Profile: { // field return type name
     id: 'ID'
@@ -202,12 +236,18 @@ export interface NexusGenArgTypes {
   Mutation: {
     createComment: { // args
       contentText: string; // String!
-      postId?: string | null; // String
+      postId?: string | null; // ID
       url?: string | null; // String
     }
     createProfile: { // args
       accountId: string; // String!
       name: string; // String!
+    }
+    likePost: { // args
+      postId: string; // ID!
+    }
+    unlikePost: { // args
+      postId: string; // ID!
     }
   }
   Query: {

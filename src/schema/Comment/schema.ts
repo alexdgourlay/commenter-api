@@ -1,6 +1,6 @@
 import {Comment, CommentContent, Domain, Post} from 'nexus-prisma';
 import {objectType, extendType, stringArg, idArg} from 'nexus';
-import {type Context} from '../../context';
+import { type Context } from '../../server';
 import {createComment} from './resolver';
 
 export default [
@@ -56,12 +56,12 @@ export default [
       t.nonNull.field('createComment', {
         type: Comment.$name,
         args: {
-          postId: stringArg(),
           url: stringArg(),
+          postId: idArg(),
           contentText: CommentContent.text.type,
         },
         resolve: (_, {postId, url, contentText}, context: Context) =>
-          createComment(context.prisma, context.profileId, {
+          createComment(context, context.profileId, {
             contentText,
             postId: postId || undefined,
             url: url || undefined,

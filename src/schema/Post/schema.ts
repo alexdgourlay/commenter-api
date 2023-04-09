@@ -1,6 +1,7 @@
 import {Domain, Post} from 'nexus-prisma';
 import {objectType, extendType} from 'nexus';
-import {type Context} from '../../context';
+import {type Context} from '../../server';
+import {getAllPosts, getPost, getPostsOnDomain} from './resolver';
 
 export default [
   objectType({
@@ -11,7 +12,30 @@ export default [
       t.field(Post.comments);
       t.field(Post.title);
       t.field(Post.webAddress);
+      t.field(Post.previewImage);
+      t.field(Post.likes);
 
+      t.nonNull.field('liked', {
+        type: 'Boolean',
+        description: 'Has the profile like the post.',
+        resolve: async (post, __, context: Context) =>
+          // Find a like on this post made by the user.
+          context.prisma.post
+            .findFirst({
+              where: {
+                likes: {
+                  some: {
+                    postId: post.id,
+                    profileId: context.profileId,
+                  },
+                },
+              },
+            })
+            // Transform to boolean.
+            .then(profileLike => (profileLike === null ? false : true)),
+      });
+
+      // Define count aggregate field.
       t.field('_count', {
         type: `${Post.$name}Count`,
       });
@@ -23,6 +47,7 @@ export default [
     description: 'Aggregated count data for a post.',
     definition(t) {
       t.int('comments', {description: 'Comment count.'});
+      t.int('likes', {description: 'Like count.'});
     },
   }),
 
@@ -32,15 +57,7 @@ export default [
       t.list.nonNull.field('posts', {
         type: Post.$name,
         description: 'Returns all posts.',
-        async resolve(_, __, context: Context) {
-          return context.prisma.post.findMany({
-            include: {
-              _count: {
-                select: {comments: true},
-              },
-            },
-          });
-        },
+        resolve: (_, __, context: Context) => getAllPosts(context),
       });
 
       t.list.nonNull.field('postsOnDomain', {
@@ -49,22 +66,8 @@ export default [
         args: {
           domain: Domain.domain.type,
         },
-        async resolve(_, {domain}, context: Context) {
-          return context.prisma.post.findMany({
-            where: {
-              webAddress: {
-                domain: {
-                  domain
-                }
-              },
-            },
-            include: {
-              _count: {
-                select: {comments: true},
-              },
-            },
-          });
-        },
+        resolve: (_, {domain}, context: Context) =>
+          getPostsOnDomain(context, domain),
       });
 
       t.field('post', {
@@ -73,13 +76,7 @@ export default [
         args: {
           id: Post.id.type,
         },
-        resolve(_, {id}, context: Context) {
-          return context.prisma.post.findUnique({
-            where: {
-              id,
-            },
-          });
-        },
+        resolve: (_, {id}, context: Context) => getPost(context, id),
       });
     },
   }),
