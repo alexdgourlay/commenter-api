@@ -1,4 +1,4 @@
-import {makeSchema} from 'nexus';
+import {asNexusMethod, makeSchema} from 'nexus';
 import path from 'path';
 
 import profileSchema from './Profile/schema';
@@ -9,9 +9,15 @@ import accountSchema from './Account/schema';
 import domainSchema from './Domain/schema';
 import webAddressSchema from './WebAddress/schema'
 import likeSchema from './Like/schema';
+import { GraphQLScalarType } from 'graphql';
+import { DateTimeResolver } from 'graphql-scalars';
+
+
+const dateTimeScalar = new GraphQLScalarType(DateTimeResolver)
 
 export const schema = makeSchema({
   types: [
+    asNexusMethod(dateTimeScalar, 'dateTime'),
     profileSchema,
     commentSchema,
     commentContentSchema,

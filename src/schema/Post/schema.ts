@@ -14,6 +14,7 @@ export default [
       t.field(Post.webAddress);
       t.field(Post.previewImage);
       t.field(Post.likes);
+      t.field(Post.createdAt);
 
       t.nonNull.field('liked', {
         type: 'Boolean',

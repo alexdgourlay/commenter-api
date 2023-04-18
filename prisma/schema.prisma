@@ -25,6 +25,9 @@ model Account {
   password String?
   /// The profiles of this account.
   profiles Profile[]
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represents a Profile.
@@ -41,6 +44,9 @@ model Profile {
   comments  Comment[]
   /// Likes made by this profile.
   likes     Like[]
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represents a web domain.
@@ -53,6 +59,9 @@ model Domain {
   icon         String?
   /// The web addresses under this domain.
   webAddresses WebAddress[]
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represent a unique web address with a one-to-one relation to a Post.
@@ -67,6 +76,9 @@ model WebAddress {
   domainId String  @db.ObjectId
   /// A post linked to this web address.
   post     Post?
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represents a 'like' reaction to a post.
@@ -81,6 +93,8 @@ model Like {
   profile   Profile? @relation(fields: [profileId], references: [id])
   /// The id of the profile that liked.
   profileId String   @db.ObjectId
+
+  createdAt DateTime @default(now())
 
   @@unique([postId, profileId])
 }
@@ -101,6 +115,9 @@ model Post {
   webAddressId String      @unique @db.ObjectId
   /// The likes on this post.
   likes        Like[]
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represents a Comment.
@@ -117,6 +134,9 @@ model Comment {
   postId    String          @db.ObjectId
   /// The content of this comment.
   content   CommentContent?
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }
 
 /// Represents the content of a comment.
@@ -129,4 +149,7 @@ model CommentContent {
   commentId String   @unique @db.ObjectId
   /// The text content.
   text      String
+
+  // The date and time of creation.
+  createdAt DateTime @default(now())
 }

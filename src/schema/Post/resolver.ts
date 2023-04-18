@@ -12,6 +12,9 @@ export const postCountArg = {
 
 export async function getAllPosts(context: Context) {
   return context.prisma.post.findMany({
+    orderBy: {
+      createdAt: 'desc'
+    },
     include: {
       ...postCountArg,
     },
